@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Image Classification{% endblock title %}
+{% block image_classification  %}
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<style>
+    .outer-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+    .inner-container {
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+    }
+
+    h1 {
+        background-color: #3498db;
+        color: #fff;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+
+    #result {
+        margin-top: 20px;
+        border: 1px solid #ccc;
+        padding: 10px;
+    }
+
+    audio {
+        width: 100%;
+        margin-top: 20px;
+    }
+</style>
+<div class="outer-container">
+    <div class="inner-container">
+        <h1>Image Classification</h1>
+        <form id="image_classification" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="image" accept="image/*">
+            <button type="submit">Upload</button>
+        </form>
+        <div id="result"></div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('image_classification').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        var formData = new FormData(this);
+
+        fetch('/image_rec/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.predicted_class) {
+                document.getElementById('result').innerText = "Predicted Class: " + data.predicted_class;
+            } else {
+                document.getElementById('result').innerText = "Error: " + data.error;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
+{% endblock image_classification %}
