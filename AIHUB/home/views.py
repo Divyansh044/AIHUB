@@ -9,10 +9,14 @@ import io
 import tensorflow as tf
 from keras.layers import LSTM # type: ignore
 import os
-import pathlib
-import pytesseract
 
-from AIHUB import settings
+import pytesseract
+import transformers
+import librosa
+import torch
+import IPython.display as display
+from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer
+import numpy as np
 # Create your views here.
 def home(request):
     return render (request,"index.html")
@@ -23,6 +27,8 @@ class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
                'dog', 'frog', 'horse', 'ship', 'truck']
 
 
+tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
+model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
 
 def preprocess_image(image):
     # Resize image to match model input dimensions
@@ -53,17 +59,17 @@ def predict_image(request):
 
 def speech_to_text(request):
     if request.method == 'POST':
-        recognizer = sr.Recognizer()
 
         # Check if audio file is present in the request
         if 'audio_file' in request.FILES:
             audio_file = request.FILES['audio_file']
 
             try:
-                with sr.AudioFile(audio_file) as source:
-                    audio_data = recognizer.record(source)
-                    text = recognizer.recognize_google(audio_data)
-                    return JsonResponse({'text': text})
+                input_values = tokenizer(audio_file, return_tensors = 'pt').input_values
+                logits = model(input_values).logits
+                predicted_ids = torch.argmax(logits, dim =-1)
+                text=tokenizer.decode(predicted_ids[0])
+                return JsonResponse({'text': text})
             except sr.UnknownValueError:
                 return JsonResponse({'error': 'Unable to recognize speech'})
             except sr.RequestError as e:
