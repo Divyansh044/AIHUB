@@ -6,16 +6,17 @@ from tensorflow.keras.models import load_model # type: ignore
 import numpy as np
 from PIL import Image
 import io
+import os
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
 import tensorflow as tf
 from keras.layers import LSTM # type: ignore
-import os
-
 import pytesseract
 import transformers
 import librosa
 import torch
 import IPython.display as display
-from transformers import Wav2Vec2ForCTC, Wav2Vec2Tokenizer
+from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
 import numpy as np
 # Create your views here.
 def home(request):
@@ -27,8 +28,8 @@ class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
                'dog', 'frog', 'horse', 'ship', 'truck']
 
 
-tokenizer = Wav2Vec2Tokenizer.from_pretrained("facebook/wav2vec2-base-960h")
-model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")
+processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
+model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
 
 def preprocess_image(image):
     # Resize image to match model input dimensions
@@ -65,17 +66,24 @@ def speech_to_text(request):
             audio_file = request.FILES['audio_file']
 
             try:
-                input_values = tokenizer(audio_file, return_tensors = 'pt').input_values
-                logits = model(input_values).logits
-                predicted_ids = torch.argmax(logits, dim =-1)
-                text=tokenizer.decode(predicted_ids[0])
+                # Read the content of the audio file
+                audio_content,sampling_rate=librosa.load(audio_file,sr=16000)
+
+                # Tokenize the audio content
+                input_values = processor(audio_content, return_tensors="pt").input_values
+
+            # Make prediction
+                with torch.no_grad():  # Disable gradient calculation for efficiency
+                   logits = model(input_values).logits
+                   predicted_ids = torch.argmax(logits, dim=-1)
+                   text = processor.batch_decode(predicted_ids)[0]
                 return JsonResponse({'text': text})
             except sr.UnknownValueError:
                 return JsonResponse({'error': 'Unable to recognize speech'})
             except sr.RequestError as e:
                 return JsonResponse({'error': f'Speech recognition service error: {e}'})
     else:
-        return render(request,'speech_to_text.html')
+        return render(request, 'speech_to_text.html')
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 def sign_language(request):
