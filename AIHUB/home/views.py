@@ -29,7 +29,7 @@ class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
 
 
 processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
-model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
+model1 = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
 
 def preprocess_image(image):
     # Resize image to match model input dimensions
@@ -70,11 +70,11 @@ def speech_to_text(request):
                 audio_content,sampling_rate=librosa.load(audio_file,sr=16000)
 
                 # Tokenize the audio content
-                input_values = processor(audio_content, return_tensors="pt").input_values
+                input_values = processor(audio_content, return_tensors="pt",sampling_rate=sampling_rate).input_values
 
             # Make prediction
                 with torch.no_grad():  # Disable gradient calculation for efficiency
-                   logits = model(input_values).logits
+                   logits = model1(input_values).logits
                    predicted_ids = torch.argmax(logits, dim=-1)
                    text = processor.batch_decode(predicted_ids)[0]
                 return JsonResponse({'text': text})
@@ -85,6 +85,49 @@ def speech_to_text(request):
     else:
         return render(request, 'speech_to_text.html')
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+alphabets = u"ABCDEFGHIJKLMNOPQRSTUVWXYZ-' "
+def preprocess(img):
+    (h, w) = img.shape
+    final_img = np.ones([64, 256]) * 255  # Blank white image
+    if w > 256:
+        img = img[:, :256]
+    if h > 64:
+        img = img[:64, :]
+    final_img[:h, :w] = img
+    return cv2.rotate(final_img, cv2.ROTATE_90_CLOCKWISE)
+
+def decode_prediction(prediction):
+    decoded_text = ''
+    for pred in prediction:
+        pred_index = np.argmax(pred, axis=1)
+        decoded_text += ''.join([alphabets[i] for i in pred_index if i != -1])
+    return decoded_text
+
+def handwriten(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        try:
+            # Read and preprocess the uploaded image
+            image = request.FILES['image']
+            img = cv2.imdecode(np.frombuffer(image.read(), np.uint8), cv2.IMREAD_GRAYSCALE)
+            processed_img = preprocess(img)
+
+            # Load the saved model
+            model = tf.keras.models.load_model('ml_models/HWR/handwritten (2).h5')
+
+            # Make prediction
+            prediction = model.predict(np.array([processed_img]))
+
+            # Decode the prediction to text
+            predicted_text = decode_prediction(prediction)
+
+            # Return the predicted text as JSON response
+            return JsonResponse({'predicted_text': predicted_text})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
+    else:
+        return render(request, 'HWR.html')
+    
 
 def sign_language(request):
    
