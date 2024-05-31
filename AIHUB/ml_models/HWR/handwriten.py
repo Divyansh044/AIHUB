@@ -45,8 +45,8 @@ def preprocess(img):
     final_img[:h, :w] = img
     return cv2.rotate(final_img, cv2.ROTATE_90_CLOCKWISE)
 
-train_size = 5000
-valid_size= 500
+train_size = 50000
+valid_size= 5000
 
 
 train_x = []
@@ -173,7 +173,7 @@ history = model_final.fit(
     x=[train_x, train_y, train_input_len, train_label_len], 
     y=train_output, 
     validation_data=([valid_x, valid_y, valid_input_len, valid_label_len], valid_output),
-    epochs=1, 
+    epochs=60, 
     batch_size=500,
     callbacks=[early_stopping]
 )

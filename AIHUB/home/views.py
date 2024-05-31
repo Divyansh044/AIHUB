@@ -7,8 +7,6 @@ import numpy as np
 from PIL import Image
 import io
 import os
-os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
-
 import tensorflow as tf
 from keras.layers import LSTM # type: ignore
 import pytesseract

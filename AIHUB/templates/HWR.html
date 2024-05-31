@@ -1,5 +1,4 @@
-{% extends "base.html" %} {% load static %} {% block title %} Handwritten Text
-Recognition {% endblock title %} {% block handwritten %}
+{% extends "base.html" %} {% load static %} {% block title %} Handwritten Text Recognition {% endblock title %} {% block handwritten %}
 <br />
 <br />
 <br />
@@ -34,13 +33,16 @@ Recognition {% endblock title %} {% block handwritten %}
     margin-top: 20px;
     border: 1px solid #ccc;
     padding: 10px;
-  }
-
-  audio {
-    width: 100%;
-    margin-top: 20px;
+    height: 200px; /* Fixed height for the result box */
+    overflow-y: auto; /* Enable vertical scroll if content exceeds height */
+    overflow-x: hidden; /* Prevent horizontal overflow */
+    word-wrap: break-word; /* Break long words to prevent overflow */
+    white-space: normal; /* Allow text to wrap normally */
+    box-sizing: border-box;
+    background-color: #f9f9f9; /* Optional: light background for better readability */
   }
 </style>
+
 <div class="outer-container">
   <div class="inner-container">
     <h1>Handwritten Text Recognition</h1>
@@ -54,31 +56,47 @@ Recognition {% endblock title %} {% block handwritten %}
 </div>
 
 <script>
-  document
-    .getElementById("handwritten")
-    .addEventListener("submit", function (event) {
-      event.preventDefault();
+  document.getElementById("handwritten").addEventListener("submit", function (event) {
+    event.preventDefault();
 
-      var formData = new FormData(this);
+    var formData = new FormData(this);
 
-      fetch("/handwritten_text/", {
-        method: "POST",
-        body: formData,
-        headers: {
-          "X-CSRFToken": "{{ csrf_token }}",
-        },
+    fetch("/handwritten_text/", {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.Predicted_text) {
+          // Call the function to simulate the typing effect
+          typeText(data.Predicted_text, 50); // Adjust speed as needed
+        } else {
+          document.getElementById("result").innerText = "Error: " + data.error;
+        }
       })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.Predicted_text) {
-            console.log(data.Predicted_text);
-            document.getElementById("result").innerText = "Predicted text: " + data.Predicted_text;
-          } else {
-            document.getElementById("result").innerText ="Error: " + data.error;
-          }
-        })
-        .catch((error) => console.error("Error:", error));
-    });
+      .catch((error) => console.error("Error:", error));
+  });
+
+  // Function to simulate typing effect
+  function typeText(text, speed) {
+    let i = 0;
+    const resultElement = document.getElementById("result");
+    resultElement.innerHTML = ""; // Clear existing text
+
+    const interval = setInterval(function () {
+      if (i < text.length) {
+        // Add the next character to the result element
+        resultElement.innerHTML += text[i] === " " ? "&nbsp;" : text[i];
+        resultElement.scrollTop = resultElement.scrollHeight; // Scroll to the bottom as new text is added
+        i++;
+      } else {
+        clearInterval(interval);
+      }
+    }, speed);
+  }
 </script>
 
 {% endblock handwritten %}

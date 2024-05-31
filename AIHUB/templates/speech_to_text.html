@@ -1,83 +1,106 @@
-{% extends "base.html" %}
-{% load static %}
-{% block speech_to_text %}
+{% extends "base.html" %} {% load static %} {% block speech_to_text %}
 <style>
-    .outer-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
+  .outer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
 
-    .inner-container {
-        max-width: 600px;
-        width: 100%;
-        text-align: center;
-    }
+  .inner-container {
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+  }
 
-    h1 {
-        background-color: #3498db;
-        color: #fff;
-        padding: 10px;
-        margin-bottom: 20px;
-    }
+  h1 {
+    background-color: #3498db;
+    color: #fff;
+    padding: 10px;
+    margin-bottom: 20px;
+  }
 
-    #result {
-        margin-top: 20px;
-        border: 1px solid #ccc;
-        padding: 10px;
-    }
+  #result {
+    margin-top: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    height: 200px; /* Fixed height for the result box */
+    overflow-y: auto; /* Enable vertical scroll if content exceeds height */
+    overflow-x: hidden; /* Prevent horizontal overflow */
+    word-wrap: break-word; /* Break long words to prevent overflow */
+    white-space: normal; /* Allow text to wrap normally */
+    box-sizing: border-box;
+    background-color: #f9f9f9; /* Optional: light background for better readability */
+  }
 
-    audio {
-        width: 100%;
-        margin-top: 20px;
-    }
+  audio {
+    width: 100%;
+    margin-top: 20px;
+  }
 </style>
 
-
 <div class="outer-container">
-    <div class="inner-container">
-        <h1>Speech to Text Conversion</h1>
-        <form id="speechToTextForm" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="file" name="audio_file" accept="audio/*">
-            <button type="submit">Convert</button>
-        </form>
-        <audio controls id="audioPlayer" ></audio>
+  <div class="inner-container">
+    <h1>Speech to Text Conversion</h1>
+    <form id="speechToTextForm" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="file" name="audio_file" accept="audio/*" />
+      <button type="submit">Convert</button>
+    </form>
+    <audio controls id="audioPlayer"></audio>
 
-        <div id="result"></div>
+    <div id="result"></div>
 
+    <script>
+      document.getElementById("speechToTextForm").addEventListener("submit", function(event) {
+        event.preventDefault();
 
-        <script>
-            document.getElementById('speechToTextForm').addEventListener('submit', function(event) {
-                event.preventDefault();
+        var formData = new FormData(this);
 
-                var formData = new FormData(this);
+        fetch("/speech-to-text/", {
+          method: "POST",
+          body: formData,
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+          },
+        })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.text) {
+            // Call the function to simulate the typing effect
+            typeText(data.text, 50); // Adjust speed as needed
+          } else if (data.error) {
+            document.getElementById("result").innerText = data.error;
+          }
 
-                fetch('/speech-to-text/', {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.text) {
-                        document.getElementById('result').innerText = data.text;
-                    } else if (data.error) {
-                        document.getElementById('result').innerText = data.error;
-                    }
+          // Set audio source and show player
+          if (data.audio_url) {
+            var audioPlayer = document.getElementById("audioPlayer");
+            audioPlayer.src = data.audio_url;
+            audioPlayer.style.display = "block";
+          }
+        })
+        .catch((error) => console.error("Error:", error));
+      });
 
-                    // Set audio source and show player
-                    if (data.audio_url) {
-                        var audioPlayer = document.getElementById('audioPlayer');
-                        audioPlayer.src = data.audio_url;
-                        audioPlayer.style.display = 'block';
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            });
-        </script>
-    </div>
-</div>{% endblock speech_to_text%}
+      // Function to simulate typing effect
+      function typeText(text, speed) {
+        let i = 0;
+        const resultElement = document.getElementById("result");
+        resultElement.innerHTML = ""; // Clear existing text
+
+        const interval = setInterval(function() {
+          if (i < text.length) {
+            // Add the next character to the result element
+            resultElement.innerHTML += text[i] === " " ? "&nbsp;" : text[i];
+            resultElement.scrollTop = resultElement.scrollHeight; // Scroll to the bottom as new text is added
+            i++;
+          } else {
+            clearInterval(interval);
+          }
+        }, speed);
+      }
+    </script>
+  </div>
+</div>
+{% endblock speech_to_text %}
