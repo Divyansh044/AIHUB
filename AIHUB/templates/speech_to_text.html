@@ -1,5 +1,14 @@
 {% extends "base.html" %} {% load static %} {% block speech_to_text %}
 <style>
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+
+  body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    background: linear-gradient(to right, #f7f9fc, #eaf6ff);
+    color: #333;
+  }
+
   .outer-container {
     display: flex;
     justify-content: center;
@@ -9,33 +18,59 @@
 
   .inner-container {
     max-width: 600px;
-    width: 100%;
+    width: 90%;
+    padding: 2rem;
+    border-radius: 20px;
+    background-color: white;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     text-align: center;
   }
 
   h1 {
-    background-color: #3498db;
-    color: #fff;
-    padding: 10px;
-    margin-bottom: 20px;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
   }
 
-  #result {
-    margin-top: 20px;
-    border: 1px solid #ccc;
+  input[type="file"] {
+    margin: 1rem 0;
     padding: 10px;
-    height: 200px; /* Fixed height for the result box */
-    overflow-y: auto; /* Enable vertical scroll if content exceeds height */
-    overflow-x: hidden; /* Prevent horizontal overflow */
-    word-wrap: break-word; /* Break long words to prevent overflow */
-    white-space: normal; /* Allow text to wrap normally */
-    box-sizing: border-box;
-    background-color: #f9f9f9; /* Optional: light background for better readability */
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  button:hover {
+    background-color: #2b85c5;
   }
 
   audio {
     width: 100%;
-    margin-top: 20px;
+    margin-top: 1.5rem;
+  }
+
+  #result {
+    margin-top: 1.5rem;
+    background-color: #f0f6ff;
+    border: 1px solid #cce0ff;
+    padding: 1rem;
+    height: 200px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    border-radius: 10px;
+    font-family: monospace;
+    white-space: pre-wrap;
   }
 </style>
 
@@ -47,15 +82,49 @@
       <input type="file" name="audio_file" accept="audio/*" />
       <button type="submit">Convert</button>
     </form>
+    <div id="loader" style="display: none; margin-top: 1rem">
+      <p>Transcribing... please wait ⏳</p>
+    </div>
+
     <audio controls id="audioPlayer"></audio>
 
     <div id="result"></div>
 
     <script>
+      // Typing effect
+      function typeText(text, speed) {
+        let i = 0;
+        const resultElement = document.getElementById("result");
+        resultElement.innerHTML = ""; // Clear previous
+
+        const interval = setInterval(() => {
+          if (i < text.length) {
+            resultElement.innerHTML += text[i] === " " ? "&nbsp;" : text[i];
+            resultElement.scrollTop = resultElement.scrollHeight;
+            i++;
+          } else {
+            clearInterval(interval);
+          }
+        }, speed);
+      }
+
+      // Form handling
       document.getElementById("speechToTextForm").addEventListener("submit", function(event) {
         event.preventDefault();
 
         var formData = new FormData(this);
+        const fileInput = this.querySelector('input[name="audio_file"]');
+        const file = fileInput.files[0];
+
+        // Preview audio
+        if (file) {
+          const audioURL = URL.createObjectURL(file);
+          const audioPlayer = document.getElementById("audioPlayer");
+          audioPlayer.src = audioURL;
+          audioPlayer.style.display = "block";
+        }
+
+        document.getElementById("loader").style.display = "block"; // show loader before sending request
 
         fetch("/speech-to-text/", {
           method: "POST",
@@ -66,40 +135,19 @@
         })
         .then((response) => response.json())
         .then((data) => {
+          document.getElementById("loader").style.display = "none"; // hide loader after response
+
           if (data.text) {
-            // Call the function to simulate the typing effect
-            typeText(data.text, 50); // Adjust speed as needed
+            typeText(data.text, 50);
           } else if (data.error) {
             document.getElementById("result").innerText = data.error;
           }
-
-          // Set audio source and show player
-          if (data.audio_url) {
-            var audioPlayer = document.getElementById("audioPlayer");
-            audioPlayer.src = data.audio_url;
-            audioPlayer.style.display = "block";
-          }
         })
-        .catch((error) => console.error("Error:", error));
+        .catch((error) => {
+          document.getElementById("loader").style.display = "none";
+          console.error("Error:", error);
+        });
       });
-
-      // Function to simulate typing effect
-      function typeText(text, speed) {
-        let i = 0;
-        const resultElement = document.getElementById("result");
-        resultElement.innerHTML = ""; // Clear existing text
-
-        const interval = setInterval(function() {
-          if (i < text.length) {
-            // Add the next character to the result element
-            resultElement.innerHTML += text[i] === " " ? "&nbsp;" : text[i];
-            resultElement.scrollTop = resultElement.scrollHeight; // Scroll to the bottom as new text is added
-            i++;
-          } else {
-            clearInterval(interval);
-          }
-        }, speed);
-      }
     </script>
   </div>
 </div>

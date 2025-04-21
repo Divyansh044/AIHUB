@@ -16,9 +16,66 @@ import torch
 import IPython.display as display
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
 import numpy as np
-# Create your views here.
+import tensorflow as tf
+from tensorflow.keras.applications.mobilenet_v2 import decode_predictions, preprocess_input
+from tensorflow.keras.preprocessing import image
+import numpy as np
+from django.core.files.storage import FileSystemStorage
+import os
+
+
+
+def speech_to_text(request):
+    if request.method == 'POST' and 'audio_file' in request.FILES:
+        audio_file = request.FILES['audio_file']
+        fs = FileSystemStorage()
+        filename = fs.save(audio_file.name, audio_file)
+        file_path = fs.path(filename)
+        file_url = fs.url(filename)  # 🔥 This is the audio URL
+
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(file_path) as source:
+            audio_data = recognizer.record(source)
+            try:
+                text = recognizer.recognize_google(audio_data)
+                return JsonResponse({'text': text, 'audio_url': file_url})  # 👈 include this
+            except sr.UnknownValueError:
+                return JsonResponse({'error': 'Could not understand audio'})
+            except sr.RequestError as e:
+                return JsonResponse({'error': f'Service error: {e}'})
+    
+    return render(request, 'speech_to_text.html')
+
 def home(request):
     return render (request,"index.html")
+
+def classify_image(request):
+    if request.method == 'POST' and request.FILES['image']:
+        img_file = request.FILES['image']
+        fs = FileSystemStorage()
+        file_path = fs.save(img_file.name, img_file)
+        file_url = fs.url(file_path)
+
+        # Load image for model
+        img_path = fs.path(file_path)
+        img = image.load_img(img_path, target_size=(224, 224))
+        img_array = image.img_to_array(img)
+        img_array = np.expand_dims(img_array, axis=0)
+        img_array = preprocess_input(img_array)
+
+        # Load model
+        model = tf.keras.applications.MobileNetV2(weights='imagenet')
+        preds = model.predict(img_array)
+        decoded = decode_predictions(preds, top=3)[0]
+
+        result = [(label, float(prob)) for (_, label, prob) in decoded]
+        os.remove(img_path)  # Clean up
+
+        return render(request, 'result.html', {'result': result, 'image': file_url})
+    
+    return render(request, 'upload.html')
+# Create your views here.
+
 
 
 model=load_model('ml_models/Image_rec/img_classify.keras')
@@ -28,33 +85,6 @@ class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
 
 processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
 model1 = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
-
-def preprocess_image(image):
-    # Resize image to match model input dimensions
-    image = image.resize((32, 32))
-    # Convert image to numpy array and normalize pixel values
-    image = np.array(image) / 255.0
-    # Expand dimensions to match model input shape (add batch dimension)
-    image = np.expand_dims(image, axis=0)
-    return image
-
-
-
-def predict_image(request):
-    if request.method == 'POST':
-        # Get uploaded image from request
-        uploaded_image = request.FILES['image']
-        # Open and preprocess the image
-        image = Image.open(io.BytesIO(uploaded_image.read()))
-        preprocessed_image = preprocess_image(image)
-        # Make prediction
-        predictions = model.predict(preprocessed_image)
-        # Get predicted class index
-        predicted_class_index = np.argmax(predictions)
-        predicted_class=class_names[predicted_class_index]
-        return JsonResponse({'predicted_class': predicted_class})
-
-    return render(request, 'image_classification.html')
 
 def speech_to_text(request):
     if request.method == 'POST':
@@ -85,46 +115,46 @@ def speech_to_text(request):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 alphabets = u"ABCDEFGHIJKLMNOPQRSTUVWXYZ-' "
-def preprocess(img):
-    (h, w) = img.shape
-    final_img = np.ones([64, 256]) * 255  # Blank white image
-    if w > 256:
-        img = img[:, :256]
-    if h > 64:
-        img = img[:64, :]
-    final_img[:h, :w] = img
-    return cv2.rotate(final_img, cv2.ROTATE_90_CLOCKWISE)
+# def preprocess(img):
+#     (h, w) = img.shape
+#     final_img = np.ones([64, 256]) * 255  # Blank white image
+#     if w > 256:
+#         img = img[:, :256]
+#     if h > 64:
+#         img = img[:64, :]
+#     final_img[:h, :w] = img
+#     return cv2.rotate(final_img, cv2.ROTATE_90_CLOCKWISE)
 
-def decode_prediction(prediction):
-    decoded_text = ''
-    for pred in prediction:
-        pred_index = np.argmax(pred, axis=1)
-        decoded_text += ''.join([alphabets[i] for i in pred_index if i != -1])
-    return decoded_text
+# def decode_prediction(prediction):
+#     decoded_text = ''
+#     for pred in prediction:
+#         pred_index = np.argmax(pred, axis=1)
+#         decoded_text += ''.join([alphabets[i] for i in pred_index if i != -1])
+#     return decoded_text
 
-def handwriten(request):
-    if request.method == 'POST' and request.FILES.get('image'):
-        try:
-            # Read and preprocess the uploaded image
-            image = request.FILES['image']
-            img = cv2.imdecode(np.frombuffer(image.read(), np.uint8), cv2.IMREAD_GRAYSCALE)
-            processed_img = preprocess(img)
+# def handwriten(request):
+#     if request.method == 'POST' and request.FILES.get('image'):
+#         try:
+#             # Read and preprocess the uploaded image
+#             image = request.FILES['image']
+#             img = cv2.imdecode(np.frombuffer(image.read(), np.uint8), cv2.IMREAD_GRAYSCALE)
+#             processed_img = preprocess(img)
 
-            # Load the saved model
-            model = tf.keras.models.load_model('ml_models/HWR/handwritten (2).h5')
+#             # Load the saved model
+#             model = tf.keras.models.load_model('ml_models/HWR/handwritten (2).h5')
 
-            # Make prediction
-            prediction = model.predict(np.array([processed_img]))
+#             # Make prediction
+#             prediction = model.predict(np.array([processed_img]))
 
-            # Decode the prediction to text
-            predicted_text = decode_prediction(prediction)
+#             # Decode the prediction to text
+#             predicted_text = decode_prediction(prediction)
 
-            # Return the predicted text as JSON response
-            return JsonResponse({'predicted_text': predicted_text})
-        except Exception as e:
-            return JsonResponse({'error': str(e)})
-    else:
-        return render(request, 'HWR.html')
+#             # Return the predicted text as JSON response
+#             return JsonResponse({'predicted_text': predicted_text})
+#         except Exception as e:
+#             return JsonResponse({'error': str(e)})
+#     else:
+#         return render(request, 'HWR.html')
     
 
 def sign_language(request):
@@ -134,407 +164,6 @@ def sign_language(request):
 
 def tts(request):
     return render(request,'text_to_speech.html')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

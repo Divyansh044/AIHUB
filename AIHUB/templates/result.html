@@ -1,0 +1,6 @@
+<h2>Prediction:</h2>
+<ul>
+    {% for label, prob in result %}
+        <li>{{ label }} - {{ prob|floatformat:2 }}</li>
+    {% endfor %}
+</ul>
