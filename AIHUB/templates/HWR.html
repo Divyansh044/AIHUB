@@ -1,48 +1,79 @@
 {% extends "base.html" %} {% load static %} {% block title %} Handwritten Text Recognition {% endblock title %} {% block handwritten %}
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
-<br />
 <style>
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
+
+  body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    background: linear-gradient(to right, #f7f9fc, #eaf6ff);
+    color: #333;
+  }
+
   .outer-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: calc(100vh - 60px); /* adjust height */
+    margin-top: 60px; /* push below navbar */
   }
-
+  
   .inner-container {
     max-width: 600px;
-    width: 100%;
+    width: 90%;
+    padding: 2rem;
+    border-radius: 20px;
+    background-color: white;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     text-align: center;
   }
 
   h1 {
-    background-color: #3498db;
-    color: #fff;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+  }
+
+  input[type="file"] {
+    margin: 1rem 0;
     padding: 10px;
-    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+  }
+
+  button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  button:hover {
+    background-color: #2b85c5;
+  }
+
+  audio {
+    width: 100%;
+    margin-top: 1.5rem;
   }
 
   #result {
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    padding: 10px;
-    height: 200px; /* Fixed height for the result box */
-    overflow-y: auto; /* Enable vertical scroll if content exceeds height */
-    overflow-x: hidden; /* Prevent horizontal overflow */
-    word-wrap: break-word; /* Break long words to prevent overflow */
-    white-space: normal; /* Allow text to wrap normally */
-    box-sizing: border-box;
-    background-color: #f9f9f9; /* Optional: light background for better readability */
+    margin-top: 1.5rem;
+    background-color: #f0f6ff;
+    border: 1px solid #cce0ff;
+    padding: 1rem;
+    height: 200px;
+    overflow-y: auto;
+    word-wrap: break-word;
+    border-radius: 10px;
+    font-family: monospace;
+    white-space: pre-wrap;
   }
 </style>
-
 <div class="outer-container">
   <div class="inner-container">
     <h1>Handwritten Text Recognition</h1>

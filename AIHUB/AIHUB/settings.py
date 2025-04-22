@@ -16,7 +16,7 @@ import os
 from django.contrib.messages import constants as messages
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+LOGIN_URL = 'login'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -126,7 +126,7 @@ MEDIA_ROOT=os.path.join(BASE_DIR, "media")
 
 EMAIL_HOST='smtp.gmail.com'
 EMAIL_HOST_USER='divyanshbangwal@gmail.com'
-EMAIL_HOST_PASSWORD='gdap njzr zgpt xknh'
+EMAIL_HOST_PASSWORD=''
 EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_SSL_CIPHER = 'TLSv1.2'

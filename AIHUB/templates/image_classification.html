@@ -1,82 +1,111 @@
 {% extends "base.html" %}
 {% load static %}
 {% block title %}Image Classification{% endblock title %}
-{% block image_classification  %}
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+
+{% block image_classification %}
 <style>
-    .outer-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
+  @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap");
 
-    .inner-container {
-        max-width: 600px;
-        width: 100%;
-        text-align: center;
-    }
+  body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    background: linear-gradient(to right, #f7f9fc, #eaf6ff);
+    color: #333;
+  }
 
-    h1 {
-        background-color: #3498db;
-        color: #fff;
-        padding: 10px;
-        margin-bottom: 20px;
-    }
+  .outer-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+  }
 
-    #result {
-        margin-top: 20px;
-        border: 1px solid #ccc;
-        padding: 10px;
-    }
+  .inner-container {
+    max-width: 600px;
+    width: 100%;
+    padding: 2rem;
+    border-radius: 20px;
+    background-color: white;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
 
-    audio {
-        width: 100%;
-        margin-top: 20px;
-    }
+  h1 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+  }
+
+  input[type="file"] {
+    margin: 1rem 0;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  button:hover {
+    background-color: #2b85c5;
+  }
+
+  .result-box {
+    margin-top: 2rem;
+    background-color: #f0f6ff;
+    border: 1px solid #cce0ff;
+    padding: 1.2rem;
+    border-radius: 10px;
+    font-family: monospace;
+  }
+
+  .prediction {
+    margin: 0.5rem 0;
+  }
+
+  .uploaded-image {
+    margin-top: 1.5rem;
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
 </style>
+
 <div class="outer-container">
-    <div class="inner-container">
-        <h1>Image Classification</h1>
-        <form id="image_classification" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="file" name="image" accept="image/*">
-            <button type="submit">Upload</button>
-        </form>
-        <div id="result"></div>
-    </div>
+  <div class="inner-container">
+    <h1>Image Classification</h1>
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="file" name="image" accept="image/*" required>
+      <br>
+      <button type="submit">Upload & Classify</button>
+    </form>
+
+    {% if result %}
+      <div class="result-box">
+        <h3>Top Predictions:</h3>
+        {% for label, prob in result %}
+          <div class="prediction">
+            {{ forloop.counter }}. <strong>{{ label }}</strong> — {{ prob|floatformat:2 }}%
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if image %}
+      <img src="{{ image }}" alt="Uploaded Image" class="uploaded-image">
+    {% endif %}
+  </div>
 </div>
-
-<script>
-    document.getElementById('image_classification').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        var formData = new FormData(this);
-
-        fetch('/image_rec/', {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.predicted_class) {
-                document.getElementById('result').innerText = "Predicted Class: " + data.predicted_class;
-            } else {
-                document.getElementById('result').innerText = "Error: " + data.error;
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
-</script>
 {% endblock image_classification %}

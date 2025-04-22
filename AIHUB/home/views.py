@@ -22,33 +22,35 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 from django.core.files.storage import FileSystemStorage
 import os
-
-
-
-def speech_to_text(request):
-    if request.method == 'POST' and 'audio_file' in request.FILES:
-        audio_file = request.FILES['audio_file']
-        fs = FileSystemStorage()
-        filename = fs.save(audio_file.name, audio_file)
-        file_path = fs.path(filename)
-        file_url = fs.url(filename)  # 🔥 This is the audio URL
-
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(file_path) as source:
-            audio_data = recognizer.record(source)
-            try:
-                text = recognizer.recognize_google(audio_data)
-                return JsonResponse({'text': text, 'audio_url': file_url})  # 👈 include this
-            except sr.UnknownValueError:
-                return JsonResponse({'error': 'Could not understand audio'})
-            except sr.RequestError as e:
-                return JsonResponse({'error': f'Service error: {e}'})
-    
-    return render(request, 'speech_to_text.html')
+from django.shortcuts import redirect
+from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     return render (request,"index.html")
 
+def contact_ajax_view(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        full_message = f"From: {name}\nEmail: {email}\n\n{message}"
+
+        try:
+            send_mail(
+                subject,
+                full_message,
+                'email',  # FROM
+                ['divyanshbagnwal@gmail.com'],  # TO
+            )
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+@login_required
 def classify_image(request):
     if request.method == 'POST' and request.FILES['image']:
         img_file = request.FILES['image']
@@ -71,21 +73,14 @@ def classify_image(request):
         result = [(label, float(prob)) for (_, label, prob) in decoded]
         os.remove(img_path)  # Clean up
 
-        return render(request, 'result.html', {'result': result, 'image': file_url})
+        return render(request, 'image_classification.html', {'result': result, 'image': file_url})
     
-    return render(request, 'upload.html')
+    return render(request, 'image_classification.html')
 # Create your views here.
-
-
-
-model=load_model('ml_models/Image_rec/img_classify.keras')
-class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
-               'dog', 'frog', 'horse', 'ship', 'truck']
-
 
 processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
 model1 = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
-
+@login_required
 def speech_to_text(request):
     if request.method == 'POST':
 
@@ -114,59 +109,16 @@ def speech_to_text(request):
         return render(request, 'speech_to_text.html')
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
-alphabets = u"ABCDEFGHIJKLMNOPQRSTUVWXYZ-' "
-# def preprocess(img):
-#     (h, w) = img.shape
-#     final_img = np.ones([64, 256]) * 255  # Blank white image
-#     if w > 256:
-#         img = img[:, :256]
-#     if h > 64:
-#         img = img[:64, :]
-#     final_img[:h, :w] = img
-#     return cv2.rotate(final_img, cv2.ROTATE_90_CLOCKWISE)
-
-# def decode_prediction(prediction):
-#     decoded_text = ''
-#     for pred in prediction:
-#         pred_index = np.argmax(pred, axis=1)
-#         decoded_text += ''.join([alphabets[i] for i in pred_index if i != -1])
-#     return decoded_text
-
-# def handwriten(request):
-#     if request.method == 'POST' and request.FILES.get('image'):
-#         try:
-#             # Read and preprocess the uploaded image
-#             image = request.FILES['image']
-#             img = cv2.imdecode(np.frombuffer(image.read(), np.uint8), cv2.IMREAD_GRAYSCALE)
-#             processed_img = preprocess(img)
-
-#             # Load the saved model
-#             model = tf.keras.models.load_model('ml_models/HWR/handwritten (2).h5')
-
-#             # Make prediction
-#             prediction = model.predict(np.array([processed_img]))
-
-#             # Decode the prediction to text
-#             predicted_text = decode_prediction(prediction)
-
-#             # Return the predicted text as JSON response
-#             return JsonResponse({'predicted_text': predicted_text})
-#         except Exception as e:
-#             return JsonResponse({'error': str(e)})
-#     else:
-#         return render(request, 'HWR.html')
-    
-
+@login_required
 def sign_language(request):
    
     os.system("python ml_models/sign_lang/Sign-Language-Generation-From-Video-using-YOLOV5-master/yolov5-master/detect.py --weights ml_models/sign_lang/Sign-Language-Generation-From-Video-using-YOLOV5-master/yolov5-master/best.pt --img 416 --conf 0.4 --source 0")
-    return render(request,'sign_lang.html')
+    return redirect('home') 
 
 def tts(request):
     return render(request,'text_to_speech.html')
 
-
-
+@login_required
 def handwritten(request):
     if request.method == 'POST' and request.FILES['image']:
         # Get the uploaded image from the request

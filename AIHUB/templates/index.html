@@ -1,316 +1,407 @@
-{% extends "base.html" %}
-{% load static %}
-{% block title %}AIHUB-Your AI services Gateway{% endblock title %}
-{% block body %}
-  <!-- ======= Hero Section ======= -->
-  <section id="hero" class="hero d-flex align-items-center">
+{% extends "base.html" %} {% load static %} {% block title %}AIHUB-Your AI
+services Gateway{% endblock title %} {% block body %}
+<!-- ======= Hero Section ======= -->
+<section id="hero" class="hero d-flex align-items-center">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 d-flex flex-column justify-content-center">
+        <h1 data-aos="fade-up">
+          We offer AI services to boost your productivity
+        </h1>
+        <h2 data-aos="fade-up" data-aos-delay="400">
+          We are team of talented developers making AI platforms
+        </h2>
+        <div data-aos="fade-up" data-aos-delay="600">
+          <div class="text-center text-lg-start">
+            <a
+              href="#services"
+              class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center"
+            >
+              <span>Let's Start</span>
+              <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 hero-img" data-aos="zoom-out" data-aos-delay="200">
+        <img
+          src="{% static 'assets/img/hero-img.png' %}"
+          class="img-fluid"
+          alt=""
+        />
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Hero -->
 
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-6 d-flex flex-column justify-content-center">
-          <h1 data-aos="fade-up">We offer AI services to boost your productivity</h1>
-          <h2 data-aos="fade-up" data-aos-delay="400">We are team of talented developers making AI platforms</h2>
-          <div data-aos="fade-up" data-aos-delay="600">
+<main id="main">
+  <!-- ======= About Section ======= -->
+  <section id="about" class="about">
+    <div class="container" data-aos="fade-up">
+      <div class="row gx-0">
+        <div
+          class="col-lg-6 d-flex flex-column justify-content-center"
+          data-aos="fade-up"
+          data-aos-delay="200"
+        >
+          <div class="content">
+            <h3>Who I Am</h3>
+            <h2>
+              I'm a passionate Software Development Engineer focused on building
+              impactful, scalable, and efficient digital solutions.
+            </h2>
+            <p>
+              With a strong foundation in data structures, algorithms, and
+              system design, I specialize in backend development and cloud
+              infrastructure. I love solving real-world problems through clean
+              and maintainable code, and I continuously strive to learn and grow
+              in this fast-evolving tech world.
+            </p>
             <div class="text-center text-lg-start">
-              <a href="#services" class="btn-get-started scrollto d-inline-flex align-items-center justify-content-center align-self-center">
-                <span>Let's Start</span>
+              <a
+                href="#portfolio"
+                class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center"
+              >
+                <span>View My Work</span>
                 <i class="bi bi-arrow-right"></i>
               </a>
             </div>
           </div>
         </div>
-        <div class="col-lg-6 hero-img" data-aos="zoom-out" data-aos-delay="200">
-          <img src="{% static 'assets/img/hero-img.png' %}" class="img-fluid" alt="">
+
+        <div
+          class="col-lg-6 d-flex align-items-center"
+          data-aos="zoom-out"
+          data-aos-delay="200"
+        >
+          <img
+            src="{% static 'assets/img/about.png' %}"
+            height="396"
+            width="500"
+            alt="About Me Image"
+          />
         </div>
       </div>
     </div>
+  </section>
 
-  </section><!-- End Hero -->
+  <!-- ======= Services Section ======= -->
+  <section id="services" class="services">
+    <div class="container" data-aos="fade-up">
+      <header class="section-header">
+        <h2>Services</h2>
+        <p>
+          Explore powerful AI tools designed to simplify your life. Dive in!
+        </p>
+      </header>
 
-  <main id="main">
-    <!-- ======= About Section ======= -->
-    <section id="about" class="about">
+      <div class="row gy-4">
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+          <div class="service-box blue">
+            <i class="ri-mic-line icon"></i>
+            <h3>Speech to Text</h3>
+            <p>Turn your voice into clean, readable text—just like magic!</p>
+            <a href="speech-to-text/" class="btn btn-primary mt-3">
+              Try Now <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        </div>
 
-      <div class="container" data-aos="fade-up">
-        <div class="row gx-0">
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+          <div class="service-box green">
+            <i class="ri-image-line icon"></i>
+            <h3>Image Classification</h3>
+            <p>
+              Confused by what’s in the image? Let AI do the detective work!
+            </p>
+            <a href="image_recognition/" class="btn btn-success mt-3">
+              Classify Image <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        </div>
 
-          <div class="col-lg-6 d-flex flex-column justify-content-center" data-aos="fade-up" data-aos-delay="200">
-            <div class="content">
-              <h3>Who We Are</h3>
-              <h2>Expedita voluptas omnis cupiditate totam eveniet nobis sint iste. Dolores est repellat corrupti reprehenderit.</h2>
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+          <div class="service-box red">
+            <i class="ri-file-text-line icon"></i>
+            <h3>Text Extraction</h3>
+            <p>Unreadable handwriting? Snap it—I'll decode it in seconds!</p>
+            <a href="handwritten_text/" class="btn btn-danger mt-3">
+              Extract Text <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+          <div class="service-box purple">
+            <i class="ri-volume-up-line icon"></i>
+            <h3>Text to Speech</h3>
+            <p>Too tired to read? Let your text speak for itself in style!</p>
+            <a href="text-to-speech/" class="btn btn-secondary mt-3">
+              Listen Now <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+          <div class="service-box orange">
+            <i class="ri-hand-heart-line icon"></i>
+            <h3>Sign Language</h3>
+            <p>Bridge the gap—learn, show, and communicate through signs.</p>
+            <a href="sign_language/" class="btn btn-warning mt-3">
+              Try Demo <i class="bi bi-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- End Services Section -->
+
+  {% comment %}
+  <!-- ======= Team Section ======= -->
+  <section id="team" class="team">
+    <div class="container" data-aos="fade-up">
+      <header class="section-header">
+        <h2>Team</h2>
+        <p>Our hard working team</p>
+      </header>
+
+      <div class="row gy-4">
+        <div
+          class="col-lg-3 col-md-6 d-flex align-items-stretch"
+          data-aos="fade-up"
+          data-aos-delay="100"
+        >
+          <div class="member">
+            <div class="member-img">
+              <img src="{% static "assets/img/team/team-1.jpg" %}"
+              class="img-fluid" alt="">
+              <div class="social">
+                <a href=""><i class="bi bi-twitter"></i></a>
+                <a href=""><i class="bi bi-facebook"></i></a>
+                <a href=""><i class="bi bi-instagram"></i></a>
+                <a href=""><i class="bi bi-linkedin"></i></a>
+              </div>
+            </div>
+            <div class="member-info">
+              <h4>Walter White</h4>
+              <span>Chief Executive Officer</span>
               <p>
-                Quisquam vel ut sint cum eos hic dolores aperiam. Sed deserunt et. Inventore et et dolor consequatur itaque ut voluptate sed et. Magnam nam ipsum tenetur suscipit voluptatum nam et est corrupti.
+                Velit aut quia fugit et et. Dolorum ea voluptate vel tempore
+                tenetur ipsa quae aut. Ipsum exercitationem iure minima enim
+                corporis et voluptate.
               </p>
-              <div class="text-center text-lg-start">
-                <a href="#" class="btn-read-more d-inline-flex align-items-center justify-content-center align-self-center">
-                  <span>Read More</span>
-                  <i class="bi bi-arrow-right"></i>
-                </a>
-              </div>
             </div>
           </div>
-
-          <div class="col-lg-6 d-flex align-items-center" data-aos="zoom-out" data-aos-delay="200">
-            <img src="{% static "assets/img/about.jpg" %}" class="img-fluid" alt="">
-          </div>
-
-        </div>
-      </div>
-
-    </section><!-- End About Section -->
-
-    <!-- ======= Services Section ======= -->
-    <section id="services" class="services">
-
-      <div class="container" data-aos="fade-up">
-
-        <header class="section-header">
-          <h2>Services</h2>
-          <p>Below are the Services you can use. Enjoy!!</p>
-        </header>
-
-        <div class="row gy-4">
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="service-box blue">
-              <i class="ri-discuss-line icon"></i>
-              <h3>Speech To Text</h3>
-              <p>Provide a audio file and get it translated to a text</p>
-              <a href="speech-to-text/" class="read-more"><span>View Service</span> <i class="bi bi-arrow-right"></i></a>
-            </div>
-          </div>
-
-          
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-            <div class="service-box green">
-              <i class="ri-discuss-line icon"></i>
-              <h3>Image Classification</h3>
-              <p>Low quality image?? No problem we got you back. We will figure it out</p>
-              <a href="image_rec/" class="read-more"><span>View Service</span> <i class="bi bi-arrow-right"></i></a>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
-            <div class="service-box red">
-              <i class="ri-discuss-line icon"></i>
-              <h3>Handwritten/Image Text Extraction</h3>
-              <p>Bad Handwriting?? just give it to us we will let you know what is written</p>
-              <a href="handwritten_text/" class="read-more"><span>View Service</span> <i class="bi bi-arrow-right"></i></a>
-            </div>
-          </div>
-          
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
-            <div class="service-box purple">
-              <i class="ri-discuss-line icon"></i>
-              <h3>Text to Speech</h3>
-              <p>Feeling Lazy and don't wanna read?? Dont worry provide the text and listen the audio in you favourite accent</p>
-              <a href="text-to-speech/" class="read-more"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>
-            </div>
-          </div>
-          
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="service-box orange">
-              <i class="ri-discuss-line icon"></i>
-              <h3>Sign Language</h3>
-              <p>Show your friends how much you know about sign language</p>
-              <a href="sign_language/" class="read-more"><span>View Service</span> <i class="bi bi-arrow-right"></i></a>
-            </div>
-          </div>
-          {% comment %} <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="700">
-            <div class="service-box pink">
-              <i class="ri-discuss-line icon"></i>
-              <h3>Dolori Architecto</h3>
-              <p>Hic molestias ea quibusdam eos. Fugiat enim doloremque aut neque non et debitis iure. Corrupti recusandae ducimus enim.</p>
-              <a href="#" class="read-more"><span>Read More</span> <i class="bi bi-arrow-right"></i></a>
-            </div>
-          </div> {% endcomment %}
-
         </div>
 
-      </div>
-
-    </section><!-- End Services Section -->
-
-    <!-- ======= Team Section ======= -->
-    <section id="team" class="team">
-
-      <div class="container" data-aos="fade-up">
-
-        <header class="section-header">
-          <h2>Team</h2>
-          <p>Our hard working team</p>
-        </header>
-
-        <div class="row gy-4">
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
-            <div class="member">
-              <div class="member-img">
-                <img src="{% static "assets/img/team/team-1.jpg" %}" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Walter White</h4>
-                <span>Chief Executive Officer</span>
-                <p>Velit aut quia fugit et et. Dolorum ea voluptate vel tempore tenetur ipsa quae aut. Ipsum exercitationem iure minima enim corporis et voluptate.</p>
+        <div
+          class="col-lg-3 col-md-6 d-flex align-items-stretch"
+          data-aos="fade-up"
+          data-aos-delay="200"
+        >
+          <div class="member">
+            <div class="member-img">
+              <img src="{% static "assets/img/team/team-2.jpg" %}"
+              class="img-fluid" alt="">
+              <div class="social">
+                <a href=""><i class="bi bi-twitter"></i></a>
+                <a href=""><i class="bi bi-facebook"></i></a>
+                <a href=""><i class="bi bi-instagram"></i></a>
+                <a href=""><i class="bi bi-linkedin"></i></a>
               </div>
             </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
-            <div class="member">
-              <div class="member-img">
-                <img src="{% static "assets/img/team/team-2.jpg" %}" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Sarah Jhonson</h4>
-                <span>Product Manager</span>
-                <p>Quo esse repellendus quia id. Est eum et accusantium pariatur fugit nihil minima suscipit corporis. Voluptate sed quas reiciendis animi neque sapiente.</p>
-              </div>
+            <div class="member-info">
+              <h4>Sarah Jhonson</h4>
+              <span>Product Manager</span>
+              <p>
+                Quo esse repellendus quia id. Est eum et accusantium pariatur
+                fugit nihil minima suscipit corporis. Voluptate sed quas
+                reiciendis animi neque sapiente.
+              </p>
             </div>
           </div>
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
-            <div class="member">
-              <div class="member-img">
-                <img src="{% static "assets/img/team/team-3.jpg" %}" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>William Anderson</h4>
-                <span>CTO</span>
-                <p>Vero omnis enim consequatur. Voluptas consectetur unde qui molestiae deserunt. Voluptates enim aut architecto porro aspernatur molestiae modi.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="400">
-            <div class="member">
-              <div class="member-img">
-                <img src="{% static "assets/img/team/team-4.jpg" %}" class="img-fluid" alt="">
-                <div class="social">
-                  <a href=""><i class="bi bi-twitter"></i></a>
-                  <a href=""><i class="bi bi-facebook"></i></a>
-                  <a href=""><i class="bi bi-instagram"></i></a>
-                  <a href=""><i class="bi bi-linkedin"></i></a>
-                </div>
-              </div>
-              <div class="member-info">
-                <h4>Amanda Jepson</h4>
-                <span>Accountant</span>
-                <p>Rerum voluptate non adipisci animi distinctio et deserunt amet voluptas. Quia aut aliquid doloremque ut possimus ipsum officia.</p>
-              </div>
-            </div>
-          </div>
-
         </div>
 
+        <div
+          class="col-lg-3 col-md-6 d-flex align-items-stretch"
+          data-aos="fade-up"
+          data-aos-delay="300"
+        >
+          <div class="member">
+            <div class="member-img">
+              <img src="{% static "assets/img/team/team-3.jpg" %}"
+              class="img-fluid" alt="">
+              <div class="social">
+                <a href=""><i class="bi bi-twitter"></i></a>
+                <a href=""><i class="bi bi-facebook"></i></a>
+                <a href=""><i class="bi bi-instagram"></i></a>
+                <a href=""><i class="bi bi-linkedin"></i></a>
+              </div>
+            </div>
+            <div class="member-info">
+              <h4>William Anderson</h4>
+              <span>CTO</span>
+              <p>
+                Vero omnis enim consequatur. Voluptas consectetur unde qui
+                molestiae deserunt. Voluptates enim aut architecto porro
+                aspernatur molestiae modi.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          class="col-lg-3 col-md-6 d-flex align-items-stretch"
+          data-aos="fade-up"
+          data-aos-delay="400"
+        >
+          <div class="member">
+            <div class="member-img">
+              <img src="{% static "assets/img/team/team-4.jpg" %}"
+              class="img-fluid" alt="">
+              <div class="social">
+                <a href=""><i class="bi bi-twitter"></i></a>
+                <a href=""><i class="bi bi-facebook"></i></a>
+                <a href=""><i class="bi bi-instagram"></i></a>
+                <a href=""><i class="bi bi-linkedin"></i></a>
+              </div>
+            </div>
+            <div class="member-info">
+              <h4>Amanda Jepson</h4>
+              <span>Accountant</span>
+              <p>
+                Rerum voluptate non adipisci animi distinctio et deserunt amet
+                voluptas. Quia aut aliquid doloremque ut possimus ipsum officia.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+  </section>
+  <!-- End Team Section -->
+  {% endcomment %}
 
-    </section><!-- End Team Section -->
+  <!-- ======= Contact Section ======= -->
+  <section id="contact" class="contact">
+    <div class="container" data-aos="fade-up">
+      <header class="section-header">
+        <h2>Contact</h2>
+        <p>Let's Get in Touch</p>
+      </header>
 
-    <!-- ======= Contact Section ======= -->
-    <section id="contact" class="contact">
+      <div class="row gy-4">
+        <div class="col-lg-6">
+          <div class="row gy-4">
+            <div class="col-md-6">
+              <div class="info-box">
+                <i class="bi bi-geo-alt"></i>
+                <h3>Location</h3>
+                <p>Rishikesh, Uttarakhand<br />India</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-box">
+                <i class="bi bi-telephone"></i>
+                <h3>Phone</h3>
+                <p>+91 70175 42401</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-box">
+                <i class="bi bi-envelope"></i>
+                <h3>Email</h3>
+                <p>divyanshbagnwal@gmail.com<br />divyanshbangwal04@gmail.com</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-box">
+                <i class="bi bi-clock"></i>
+                <h3>Availability</h3>
+                <p>Monday - Saturday<br />9:00AM - 06:00PM</p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <div class="container" data-aos="fade-up">
-
-        <header class="section-header">
-          <h2>Contact</h2>
-          <p>Contact Us</p>
-        </header>
-
-        <div class="row gy-4">
-
-          <div class="col-lg-6">
-
+        <div class="col-lg-6">
+          <form id="contact-form" method="post">
+            {% csrf_token %}
             <div class="row gy-4">
               <div class="col-md-6">
-                <div class="info-box">
-                  <i class="bi bi-geo-alt"></i>
-                  <h3>Address</h3>
-                  <p>A108 Adam Street,<br>New York, NY 535022</p>
-                </div>
+                <input type="text" name="name" class="form-control" placeholder="Your Name" required />
               </div>
+          
               <div class="col-md-6">
-                <div class="info-box">
-                  <i class="bi bi-telephone"></i>
-                  <h3>Call Us</h3>
-                  <p>+1 5589 55488 55<br>+1 6678 254445 41</p>
-                </div>
+                <input type="email" name="email" class="form-control" placeholder="Your Email" required />
               </div>
-              <div class="col-md-6">
-                <div class="info-box">
-                  <i class="bi bi-envelope"></i>
-                  <h3>Email Us</h3>
-                  <p>info@example.com<br>contact@example.com</p>
-                </div>
+          
+              <div class="col-md-12">
+                <input type="text" name="subject" class="form-control" placeholder="Subject" required />
               </div>
-              <div class="col-md-6">
-                <div class="info-box">
-                  <i class="bi bi-clock"></i>
-                  <h3>Open Hours</h3>
-                  <p>Monday - Friday<br>9:00AM - 05:00PM</p>
-                </div>
+          
+              <div class="col-md-12">
+                <textarea name="message" class="form-control" rows="6" placeholder="Message" required></textarea>
+              </div>
+          
+              <div class="col-md-12 text-center">
+                <div class="loading" style="display:none;">Loading...</div>
+                <div class="error-message" style="display:none;color:red;"></div>
+                <div class="sent-message" style="display:none;color:green;">Your message has been sent. Thank you!</div>
+          
+                <button type="submit">Send Message</button>
               </div>
             </div>
-
-          </div>
-
-          <div class="col-lg-6">
-            <form action="forms/contact.php" method="post" class="php-email-form">
-              <div class="row gy-4">
-
-                <div class="col-md-6">
-                  <input type="text" name="name" class="form-control" placeholder="Your Name" required>
-                </div>
-
-                <div class="col-md-6 ">
-                  <input type="email" class="form-control" name="email" placeholder="Your Email" required>
-                </div>
-
-                <div class="col-md-12">
-                  <input type="text" class="form-control" name="subject" placeholder="Subject" required>
-                </div>
-
-                <div class="col-md-12">
-                  <textarea class="form-control" name="message" rows="6" placeholder="Message" required></textarea>
-                </div>
-
-                <div class="col-md-12 text-center">
-                  <div class="loading">Loading</div>
-                  <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
-
-                  <button type="submit">Send Message</button>
-                </div>
-
-              </div>
-            </form>
-
-          </div>
-
+          </form>
+          <script>
+            document.getElementById('contact-form').addEventListener('submit', async function (e) {
+                e.preventDefault();
+            
+                const form = e.target;
+                const formData = new FormData(form);
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+                // Show loading
+                document.querySelector('.loading').style.display = 'block';
+                document.querySelector('.error-message').style.display = 'none';
+                document.querySelector('.sent-message').style.display = 'none';
+            
+                try {
+                    const response = await fetch("{% url 'contact_ajax' %}", {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': csrfToken,
+                        },
+                        body: formData,
+                    });
+            
+                    const data = await response.json();
+            
+                    document.querySelector('.loading').style.display = 'none';
+            
+                    if (data.success) {
+                        form.reset();
+                        document.querySelector('.sent-message').style.display = 'block';
+                    } else {
+                        document.querySelector('.error-message').textContent = data.error || 'Something went wrong.';
+                        document.querySelector('.error-message').style.display = 'block';
+                    }
+                } catch (error) {
+                    document.querySelector('.loading').style.display = 'none';
+                    document.querySelector('.error-message').textContent = 'Error sending message.';
+                    document.querySelector('.error-message').style.display = 'block';
+                }
+            });
+            </script>
+            
         </div>
-
       </div>
+    </div>
+  </section>
+</main>
+<!-- End #main -->
 
-    </section><!-- End Contact Section -->
-
-  </main><!-- End #main -->
-
-  {% endblock body %}
+{% endblock body %}
