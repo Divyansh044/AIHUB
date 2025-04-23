@@ -12,8 +12,11 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+import dj_database_url
 from django.contrib.messages import constants as messages
+from pathlib import Path
+from decouple import config
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 LOGIN_URL = 'login'
@@ -24,7 +27,9 @@ LOGIN_REDIRECT_URL = 'home'
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-o8p28lbr)mnq*=s5oxn4y$f4wylu3x#w!v3jz!%yjs*9!0rh!n"
+SECRET_KEY = config("django-insecure-o8p28lbr)mnq*=s5oxn4y$f4wylu3x#w!v3jz!%yjs*9!0rh!n")
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -47,6 +52,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -139,3 +145,5 @@ EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+if os.getenv("DATABASE_URL"):
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
