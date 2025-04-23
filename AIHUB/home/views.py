@@ -14,9 +14,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
 import requests
-
-IMAGGA_API_KEY = 'your_api_key'
-IMAGGA_API_SECRET = 'your_api_secret'
+from decouple import config
+IMAGGA_API_KEY = config("IMAGGA_API_KEY")
+IMAGGA_API_SECRET = config("IMAGGA_API_SECRET")
 
 def home(request):
     return render (request,"index.html")

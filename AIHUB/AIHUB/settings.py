@@ -32,9 +32,9 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG',default=True,cast=bool)
-
-ALLOWED_HOSTS = ['*']
+DEBUG = False
+COMPRESS_ENABLED = os.environ.get('COMPRESS_ENABLED', False)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 
 # Application definition
@@ -124,7 +124,6 @@ STATIC_URL = "static/"
 STATICFILES_DIRS =[
     os.path.join(BASE_DIR,'static')
 ]
-
 MESSAGE_TAGS={
     messages.ERROR:'danger'
 }
