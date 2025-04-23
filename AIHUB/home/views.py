@@ -1,31 +1,22 @@
 import cv2
 from django.shortcuts import render
-from django.http import request, JsonResponse
+from django.http import JsonResponse
 import speech_recognition as sr
-from tensorflow.keras.models import load_model # type: ignore
-import numpy as np
 from PIL import Image
-import io
 import os
-import tensorflow as tf
-from keras.layers import LSTM # type: ignore
+import speech_recognition as sr
 import pytesseract
-import transformers
-import librosa
-import torch
-import IPython.display as display
 from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
-import numpy as np
-import tensorflow as tf
-from tensorflow.keras.applications.mobilenet_v2 import decode_predictions, preprocess_input
-from tensorflow.keras.preprocessing import image
-import numpy as np
 from django.core.files.storage import FileSystemStorage
 import os
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
+import requests
+
+IMAGGA_API_KEY = 'your_api_key'
+IMAGGA_API_SECRET = 'your_api_secret'
 
 def home(request):
     return render (request,"index.html")
@@ -50,64 +41,63 @@ def contact_ajax_view(request):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
+
 @login_required
 def classify_image(request):
-    if request.method == 'POST' and request.FILES['image']:
+    if request.method == 'POST' and request.FILES.get('image'):
         img_file = request.FILES['image']
         fs = FileSystemStorage()
         file_path = fs.save(img_file.name, img_file)
+        img_path = fs.path(file_path)
         file_url = fs.url(file_path)
 
-        # Load image for model
-        img_path = fs.path(file_path)
-        img = image.load_img(img_path, target_size=(224, 224))
-        img_array = image.img_to_array(img)
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array = preprocess_input(img_array)
+        with open(img_path, 'rb') as f:
+            response = requests.post(
+                'https://api.imagga.com/v2/tags',
+                auth=(IMAGGA_API_KEY, IMAGGA_API_SECRET),
+                files={'image': f}
+            )
 
-        # Load model
-        model = tf.keras.applications.MobileNetV2(weights='imagenet')
-        preds = model.predict(img_array)
-        decoded = decode_predictions(preds, top=3)[0]
-
-        result = [(label, float(prob)) for (_, label, prob) in decoded]
         os.remove(img_path)  # Clean up
 
-        return render(request, 'image_classification.html', {'result': result, 'image': file_url})
-    
+        if response.status_code == 200:
+            tags = response.json().get('result', {}).get('tags', [])[:3]
+            result = [(tag['tag']['en'], tag['confidence']) for tag in tags]
+            return render(request, 'image_classification.html', {'result': result, 'image': file_url})
+        else:
+            return JsonResponse({'error': 'Failed to classify image'}, status=500)
+
     return render(request, 'image_classification.html')
 # Create your views here.
 
 processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
 model1 = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
+@csrf_exempt
 @login_required
 def speech_to_text(request):
-    if request.method == 'POST':
-
+   if request.method == 'POST':
         # Check if audio file is present in the request
         if 'audio_file' in request.FILES:
             audio_file = request.FILES['audio_file']
 
+            recognizer = sr.Recognizer()
             try:
-                # Read the content of the audio file
-                audio_content,sampling_rate=librosa.load(audio_file,sr=16000)
+                with sr.AudioFile(audio_file) as source:
+                    audio_data = recognizer.record(source)
 
-                # Tokenize the audio content
-                input_values = processor(audio_content, return_tensors="pt",sampling_rate=sampling_rate).input_values
+                # Convert audio to text using Google's free API
+                text = recognizer.recognize_google(audio_data)
 
-            # Make prediction
-                with torch.no_grad():  # Disable gradient calculation for efficiency
-                   logits = model1(input_values).logits
-                   predicted_ids = torch.argmax(logits, dim=-1)
-                   text = processor.batch_decode(predicted_ids)[0]
                 return JsonResponse({'text': text})
+
             except sr.UnknownValueError:
                 return JsonResponse({'error': 'Unable to recognize speech'})
             except sr.RequestError as e:
                 return JsonResponse({'error': f'Speech recognition service error: {e}'})
-    else:
+        else:
+            return JsonResponse({'error': 'No audio file provided'}, status=400)
+   else:
         return render(request, 'speech_to_text.html')
-    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @login_required
 def sign_language(request):
