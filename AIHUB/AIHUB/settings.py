@@ -27,12 +27,12 @@ LOGIN_REDIRECT_URL = 'home'
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config("django-insecure-o8p28lbr)mnq*=s5oxn4y$f4wylu3x#w!v3jz!%yjs*9!0rh!n")
+SECRET_KEY = config("SECRET_KEY")
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG',default=True,cast=bool)
 
 ALLOWED_HOSTS = []
 
@@ -86,7 +86,7 @@ WSGI_APPLICATION = "AIHUB.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
+    "default": dj_database_url.config(default='sqlite:///' + str(BASE_DIR / "db.sqlite3"), conn_max_age=600, ssl_require=True) if os.getenv("DATABASE_URL") else {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
@@ -134,7 +134,7 @@ MEDIA_ROOT=os.path.join(BASE_DIR, "media")
 
 EMAIL_HOST='smtp.gmail.com'
 EMAIL_HOST_USER='divyanshbangwal@gmail.com'
-EMAIL_HOST_PASSWORD=''
+EMAIL_HOST_PASSWORD=config("EMAIL_HOST_PASSWORD")
 EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_SSL_CIPHER = 'TLSv1.2'
