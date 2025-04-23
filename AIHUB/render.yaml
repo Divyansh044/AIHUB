@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: aihub-app
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn AIHUB.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: AIHUB.settings
+    build:
+      workingDir: ./AIHUB
