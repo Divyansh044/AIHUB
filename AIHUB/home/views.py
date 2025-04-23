@@ -114,7 +114,7 @@ def sign_language(request):
    
     os.system("python ml_models/sign_lang/Sign-Language-Generation-From-Video-using-YOLOV5-master/yolov5-master/detect.py --weights ml_models/sign_lang/Sign-Language-Generation-From-Video-using-YOLOV5-master/yolov5-master/best.pt --img 416 --conf 0.4 --source 0")
     return redirect('home') 
-
+@login_required
 def tts(request):
     return render(request,'text_to_speech.html')
 
