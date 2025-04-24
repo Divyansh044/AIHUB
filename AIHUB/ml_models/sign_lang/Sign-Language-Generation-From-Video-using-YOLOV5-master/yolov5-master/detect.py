@@ -38,8 +38,7 @@ import pathlib
 temp = pathlib.PosixPath   
 pathlib.PosixPath = pathlib.WindowsPath
 import torch
-
-FILE = Path(__file__).resolve()
+FILE = os.path.realpath(__file__)
 ROOT = FILE.parents[0]  # YOLOv5 root directory
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH

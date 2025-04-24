@@ -1,4 +1,6 @@
-{% extends "base.html" %} {% load static %} {% block text_to_speech %}
+{% extends "base.html" %}
+{% load static %}
+{% block text_to_speech %}
 <style>
   * {
     margin: 0;
@@ -6,6 +8,7 @@
     font-family: "Poppins", sans-serif;
     box-sizing: border-box;
   }
+
   .Hero {
     width: 100%;
     min-height: 100vh;
@@ -15,18 +18,23 @@
     justify-content: center;
     flex-direction: column;
     color: #fff;
+    padding: 20px;
+    text-align: center;
   }
+
   .Hero h1 {
     font-size: 45px;
     font-weight: 500;
-    margin: -50px;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
   }
+
   .Hero h1 span {
     color: #ff2963;
   }
+
   textarea {
-    width: 600px;
+    width: 100%;
+    max-width: 600px;
     height: 250px;
     background: #403d84;
     color: #fff;
@@ -38,16 +46,16 @@
     resize: none;
     margin-bottom: 30px;
   }
-  textarea placeholder {
-    font-size: 16px;
-    color: #ddd;
-  }
+
   .row {
-    width: 600px;
+    width: 100%;
+    max-width: 600px;
     display: flex;
     align-items: center;
     gap: 20px;
+    flex-wrap: wrap;
   }
+
   button {
     background: #ff2963;
     color: #fff;
@@ -57,20 +65,51 @@
     border: 0;
     outline: 0;
     cursor: pointer;
+    display: flex;
+    align-items: center;
   }
+
   button img {
     width: 16px;
     margin-right: 10px;
   }
+
   select {
     flex: 1;
     color: #fff;
     background: #5650d2;
     height: 40px;
-    padding: 0 0px;
+    padding: 0 10px;
     outline: 0;
     border: 0;
     border-radius: 35px;
+    min-width: 200px;
+  }
+
+  /* ✅ Responsive tweaks */
+  @media (max-width: 768px) {
+    .Hero h1 {
+      font-size: 32px;
+    }
+
+    textarea {
+      height: 200px;
+      font-size: 14px;
+    }
+
+    .row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    button {
+      width: 100%;
+      justify-content: center;
+    }
+
+    select {
+      width: 100%;
+    }
   }
 </style>
 
@@ -84,43 +123,44 @@
     </button>
   </div>
 </div>
+
 <script>
-    const speech = new SpeechSynthesisUtterance();
-    let voices = [];
-    const voiceSelect = document.getElementById("voice-select");
-    const speakBtn = document.getElementById("speak-btn");
-    const textInput = document.getElementById("text-input");
+  const speech = new SpeechSynthesisUtterance();
+  let voices = [];
+  const voiceSelect = document.getElementById("voice-select");
+  const speakBtn = document.getElementById("speak-btn");
+  const textInput = document.getElementById("text-input");
 
-    function populateVoices() {
-        voices = window.speechSynthesis.getVoices();
-        voiceSelect.innerHTML = "";
+  function populateVoices() {
+    voices = window.speechSynthesis.getVoices();
+    voiceSelect.innerHTML = "";
 
-        voices.forEach((voice, i) => {
-            const option = new Option(`${voice.name} (${voice.lang})`, i);
-            voiceSelect.add(option);
-        });
+    voices.forEach((voice, i) => {
+      const option = new Option(`${voice.name} (${voice.lang})`, i);
+      voiceSelect.add(option);
+    });
 
-        if (voices.length > 0) {
-            speech.voice = voices[0];
-        }
+    if (voices.length > 0) {
+      speech.voice = voices[0];
     }
+  }
 
-    window.speechSynthesis.onvoiceschanged = populateVoices;
-    populateVoices(); // Call manually in case voices are already available
+  window.speechSynthesis.onvoiceschanged = populateVoices;
+  populateVoices();
 
-    voiceSelect.addEventListener("change", () => {
-        speech.voice = voices[voiceSelect.value];
-    });
+  voiceSelect.addEventListener("change", () => {
+    speech.voice = voices[voiceSelect.value];
+  });
 
-    speakBtn.addEventListener("click", () => {
-        const text = textInput.value.trim();
-        if (!text) {
-            alert("Please enter some text!");
-            return;
-        }
-        speech.text = text;
-        window.speechSynthesis.cancel(); // Stop previous
-        window.speechSynthesis.speak(speech);
-    });
+  speakBtn.addEventListener("click", () => {
+    const text = textInput.value.trim();
+    if (!text) {
+      alert("Please enter some text!");
+      return;
+    }
+    speech.text = text;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(speech);
+  });
 </script>
 {% endblock text_to_speech %}
