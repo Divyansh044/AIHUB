@@ -6,7 +6,6 @@ from PIL import Image
 import os
 import speech_recognition as sr
 import pytesseract
-from transformers import Wav2Vec2ForCTC, Wav2Vec2Processor
 from django.core.files.storage import FileSystemStorage
 import os
 from django.shortcuts import redirect
@@ -70,8 +69,7 @@ def classify_image(request):
     return render(request, 'image_classification.html')
 # Create your views here.
 
-processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
-model1 = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-large-960h-lv60-self")
+
 @csrf_exempt
 @login_required
 def speech_to_text(request):
